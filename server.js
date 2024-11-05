@@ -48,6 +48,8 @@ const dir = "./uploads";
 if (!fs.existsSync(dir)) {
   fs.mkdirSync(dir);
 }
+// Middleware to serve static files from the 'uploads' folder
+app.use('/files', express.static(path.join(__dirname, 'uploads')));
 
 // Handle file upload
 app.post("/upload", (req, res) => {
@@ -61,6 +63,22 @@ app.post("/upload", (req, res) => {
         res.send({ message: 'File Uploaded successfully' ,file: req.file});
       }
     }
+  });
+});
+
+// Endpoint to fetch all file paths
+app.get('/list-files', (req, res) => {
+  const directoryPath = path.join(__dirname, 'uploads');
+
+  fs.readdir(directoryPath, (err, files) => {
+    if (err) {
+      return res.status(500).send('Unable to scan directory: ' + err);
+    }
+
+    // Map the file names to full URLs or paths
+    const filePaths = files.map(file => `/files/${file}`);
+
+    res.json(filePaths);
   });
 });
 
