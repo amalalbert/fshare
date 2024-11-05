@@ -82,6 +82,20 @@ app.get('/list-files', (req, res) => {
   });
 });
 
+// Endpoint to download a specific file
+app.get('/download/:filename', (req, res) => {
+  const filename = req.params.filename;
+  const filePath = path.join(uploadDirectory, filename);
+
+  // Check if the file exists before attempting to send it
+  res.sendFile(filePath, (err) => {
+      if (err) {
+          console.error('Error occurred while sending the file:', err);
+          return res.status(404).send('File not found');
+      }
+  });
+});
+
 // Serve the upload form 
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname,'index.html'));
