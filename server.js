@@ -71,14 +71,14 @@ app.get('/list-files', (req, res) => {
   const directoryPath = path.join(__dirname, 'uploads');
 
   fs.readdir(directoryPath, (err, files) => {
-    if (err) {
-      return res.status(500).send('Unable to scan directory: ' + err);
-    }
+      if (err) {
+          return res.status(500).send('Unable to scan directory: ' + err);
+      }
 
-    // Map the file names to full URLs or paths
-    const filePaths = files.map(file => `/files/${file}`);
+      // Map the file names to objects containing the file path
+      const filePaths = files.map(file => ({ filePath: `/files/${file}` }));
 
-    res.json(filePaths);
+      res.json(filePaths);
   });
 });
 
