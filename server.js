@@ -3,8 +3,8 @@ const multer = require("multer");
 const path = require("path");
 
 const app = express();
-const HOST = '192.168.6.85'
-const PORT = 3000;
+const HOST = '0.0.0.0'
+const PORT = process.env.PORT || 3000;
 
 //setup a storage engine
 const storage = multer.diskStorage({
