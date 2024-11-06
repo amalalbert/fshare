@@ -102,7 +102,7 @@ app.get('/download/:uuid', (req, res) => {
   let fileFound = false;
 
   // Read the directory to find the file with the matching UUID
-  fs.readdir(uploadDirectory, (err, files) => {
+  fs.readdir(dir, (err, files) => {
     if (err) {
       return res.status(500).send({ message: 'Error reading upload directory' });
     }
