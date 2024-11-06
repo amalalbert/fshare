@@ -77,7 +77,7 @@ app.post("/upload", (req, res) => {
 
 // Endpoint to retrieve the list of uploaded files
 app.get('/list-files', (req, res) => {
-  fs.readdir(uploadDirectory, (err, files) => {
+  fs.readdir(dir, (err, files) => {
     if (err) {
       return res.status(500).send({ message: 'Error reading upload directory' });
     }
