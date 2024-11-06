@@ -75,19 +75,23 @@ app.post("/upload", (req, res) => {
   });
 });
 
-// Endpoint to fetch all file paths
+// Endpoint to retrieve the list of uploaded files
 app.get('/list-files', (req, res) => {
-  const directoryPath = path.join(__dirname, 'uploads');
+  fs.readdir(uploadDirectory, (err, files) => {
+    if (err) {
+      return res.status(500).send({ message: 'Error reading upload directory' });
+    }
 
-  fs.readdir(directoryPath, (err, files) => {
-      if (err) {
-          return res.status(500).send('Unable to scan directory: ' + err);
-      }
+    // Map the files to an array with filename and unique ID
+    const fileList = files.map(file => {
+      const uniqueId = path.basename(file, path.extname(file)); // Extract UUID from filename
+      return {
+        uniqueId: uniqueId,
+        filename: file
+      };
+    });
 
-      // Map the file names to objects containing the file path
-      const filePaths = files.map(file => ({ filePath: `/files/${file}` }));
-
-      res.json(filePaths);
+    res.send({ files: fileList });
   });
 });
 
