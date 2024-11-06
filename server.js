@@ -6,15 +6,17 @@ const app = express();
 const HOST = '0.0.0.0'
 const PORT = process.env.PORT || 3000;
 
-//setup a storage engine
+// Configure multer storage with a unique filename
 const storage = multer.diskStorage({
-  destination: "./uploads",
-  filename: (req, file, cb) => {
-    cb(
-      null,
-      file.filename + "_" + Date.now() + path.extname(file.originalname)
-    );
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/'); // Specify your upload directory
   },
+  filename: (req, file, cb) => {
+    // Generate a unique ID for the filename
+    const uniqueId = crypto.randomUUID(); // Or use `crypto.randomBytes(16).toString('hex')` for shorter ID
+    const fileExtension = path.extname(file.originalname);
+    cb(null, `${uniqueId}${fileExtension}`);
+  }
 });
 
 //initialize upload
@@ -60,7 +62,14 @@ app.post("/upload", (req, res) => {
       if (req.file === undefined) {
         res.status(400).send({ message: "No file selected" });
       } else {
-        res.send({ message: 'File Uploaded successfully' ,file: req.file});
+        res.send({
+          message: 'File uploaded successfully',
+          file: {
+            originalName: req.file.originalname,
+            uniqueName: req.file.filename,
+            path: req.file.path
+          }
+        });
       }
     }
   });
