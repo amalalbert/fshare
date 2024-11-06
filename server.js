@@ -112,7 +112,7 @@ app.get('/download/:uuid', (req, res) => {
 
     if (file) {
       fileFound = true;
-      const filePath = path.join(uploadDirectory, file);
+      const filePath = path.join(dir, file);
 
       // Send the file to the client
       res.sendFile(filePath, (err) => {
