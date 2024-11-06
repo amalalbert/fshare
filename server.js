@@ -95,17 +95,38 @@ app.get('/list-files', (req, res) => {
   });
 });
 
-// Endpoint to download a specific file
-app.get('/download/:filename', (req, res) => {
-  const filename = req.params.filename;
-  const filePath = path.join(uploadDirectory, filename);
 
-  // Check if the file exists before attempting to send it
-  res.sendFile(filePath, (err) => {
-      if (err) {
+// Endpoint to download a specific file by UUID
+app.get('/download/:uuid', (req, res) => {
+  const uuid = req.params.uuid; // Get the UUID from the request
+  let fileFound = false;
+
+  // Read the directory to find the file with the matching UUID
+  fs.readdir(uploadDirectory, (err, files) => {
+    if (err) {
+      return res.status(500).send({ message: 'Error reading upload directory' });
+    }
+
+    // Find the file that matches the UUID (considering the file extension)
+    const file = files.find(file => path.basename(file, path.extname(file)) === uuid);
+
+    if (file) {
+      fileFound = true;
+      const filePath = path.join(uploadDirectory, file);
+
+      // Send the file to the client
+      res.sendFile(filePath, (err) => {
+        if (err) {
           console.error('Error occurred while sending the file:', err);
           return res.status(404).send('File not found');
-      }
+        }
+      });
+    }
+
+    // If no file is found, return an error response
+    if (!fileFound) {
+      return res.status(404).send('File not found for the provided UUID');
+    }
   });
 });
 
