@@ -9,13 +9,18 @@ const PORT = process.env.PORT || 3000;
 // Configure multer storage with a unique filename
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'uploads/'); // Specify your upload directory
+    cb(null, 'uploads/'); // Ensure this directory exists and is writable
   },
   filename: (req, file, cb) => {
     // Generate a unique ID for the filename
-    const uniqueId = crypto.randomUUID(); // Or use `crypto.randomBytes(16).toString('hex')` for shorter ID
-    const fileExtension = path.extname(file.originalname);
-    cb(null, `${uniqueId}${fileExtension}`);
+    const uniqueId = crypto.randomUUID(); // For a shorter ID, you can use crypto.randomBytes(16).toString('hex')
+    const fileExtension = path.extname(file.originalname).toLowerCase(); // Normalize extension to lowercase
+
+    // Create a new filename using the unique ID and the original file extension
+    const newFileName = `${uniqueId}${fileExtension}`;
+
+    // Callback with the new filename
+    cb(null, newFileName);
   }
 });
 
@@ -29,7 +34,7 @@ const upload = multer({
 }).single("file");
 
 function checkFileType(file, cb) {
-  const filetypes = /jpeg|jpg|png|gif|pdf|txt/;
+  const filetypes = /jpeg|jpg|png|heif|heic|gif|pdf|txt/;
   const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
   const mimeType = filetypes.test(file.mimetype);
   console.log(file.mimetype);
